@@ -1,18 +1,11 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import IconButton from '@material-ui/core/IconButton';
-import Avatar from '@material-ui/core/Avatar';
-import Divider from '@material-ui/core/Divider';
-import ImageIcon from '@material-ui/icons/Image';
-import WorkIcon from '@material-ui/icons/Work';
-import ClearIcon from '@material-ui/icons/Clear';
-import BeachAccessIcon from '@material-ui/icons/BeachAccess';
-import QtyInput from './QtyInput';
+import Button from '@material-ui/core/Button';
+import CartItem from './CartItem';
+import CheckoutDialog from './CheckoutDialog';
+import axios from 'axios'
+import { withSnackbar } from 'notistack';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -22,37 +15,70 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function CartList(props) {
+function CartList(props) {
+  const [checkoutDialogState, setCheckoutDialogState] = React.useState(false)
+  const [orderResponseData, setOrderResponseData] = React.useState([])
   const classes = useStyles();
+  const cartItemCount = props.cartItems.length
 
+  function onClickCheckout(e) {
+    const payload = { orderItems: [] }
+
+    props.cartItems.forEach((item) => {
+      payload.orderItems.push({ product_id: item.id, qty: item.qty })
+    })
+
+    axios.post('http://127.0.0.1:3001/orders', payload)
+      .then(response => {
+        if (response.status === 200) {
+          setOrderResponseData(response.data.data)
+          setCheckoutDialogState(true)
+          props.enqueueSnackbar('Product order successfully added to database.', {variant: 'success'})
+          props.setCartItems([])
+        }
+      }).catch(error => {
+        if(!error.response){
+          props.enqueueSnackbar('Connection error!', {variant: 'error'})
+        } else {
+          if(error.response.data.errors){
+            error.response.data.errors.forEach( e => {
+              props.enqueueSnackbar(e.message, {variant: 'error'})
+            })
+          }
+        }
+      })
+  }
+
+  function onClickCancel(e) {
+    props.setCartItems([])
+  }
   return (
-    <List className={classes.root}>
-      <ListItem>
-        <ListItemAvatar>
-          <Avatar>
-            <WorkIcon />
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText primary="Rp24.000,-" secondary="Kopi Enak dssad sdasad dasds" />
-        <ListItemSecondaryAction>
-          <IconButton color="inherit" edge="end">
-           <ClearIcon />
-          </IconButton>
-        </ListItemSecondaryAction>
-      </ListItem>
-      <ListItem>
-        <ListItemAvatar>
-          <Avatar>
-            <WorkIcon />
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText primary="Rp24.000,-" secondary="Kopi Enak dssad sdasad dasds" />
-        <ListItemSecondaryAction>
-          <IconButton color="inherit" edge="end">
-           <ClearIcon />
-          </IconButton>
-        </ListItemSecondaryAction>
-      </ListItem>
-    </List>
-  );
+    <React.Fragment>
+      <div style={{ flexGrow: 1 }}>
+        {
+          cartItemCount ? (
+            <List className={classes.root} style={{ paddingTop: 0 }}>
+              {props.cartItems.map((item) => <CartItem key={item.name} cartItem={item} cartItems={props.cartItems} setCartItems={props.setCartItems} />)}
+            </List>
+          ) : (
+              <img alt='Your cart is empty!' src='http://localhost:3001/assets/emptycart.png' style={{ width: '100%', height: 'auto' }} />
+            )
+        }
+      </div>
+      {cartItemCount ? (
+        <div style={{ margin: '16px' }}>
+          <Button onClick={onClickCheckout} variant="contained" color="primary" edge='end' fullWidth style={{ marginBottom: '8px' }}>
+            Checkout
+          </Button>
+          <Button onClick={onClickCancel} variant="contained" color="secondary" edge='end' fullWidth>
+            Cancel
+          </Button>
+        </div>
+      ) : (<div></div>)
+      }
+      <CheckoutDialog state={checkoutDialogState} setState={setCheckoutDialogState} orderResponseData={orderResponseData} setOrderResponseData={setOrderResponseData} onClick={onClickCheckout} />
+    </React.Fragment>
+  )
 }
+
+export default withSnackbar(CartList)

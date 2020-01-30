@@ -1,5 +1,6 @@
 import React, { useCallback } from "react";
-
+import {Redirect} from 'react-router-dom'
+import { withSnackbar } from 'notistack';
 import {
   Avatar,
   Button,
@@ -38,44 +39,34 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function Login(props) {
+function Login(props) {
   const [username, setUsername] = React.useState("")
   const [password, setPassword] = React.useState("")
-  const [snackbarShow, setSnackbarShow] = React.useState(false);
-  const [snackbarMessage, setSnackbarMessage] = React.useState("Message");
-  const [snackbarSeverity, setSnackbarSeverity] = React.useState("success");
-
+  const classes = useStyles();
+  //Check login
+  const loginData = localStorage.getItem('loginData')
+  if(loginData) return(<Redirect push to='/home' />)
   const handleSubmit = (event) => {
     event.preventDefault()
-    setSnackbarShow(false);
     Axios.post('http://127.0.0.1:3001/auth/signin', {username, password})
     .then(result => {
         if(result.status === 200){
-            setSnackbarSeverity('success')
-            setSnackbarMessage('Login success!')
-        } else {
-            setSnackbarSeverity('error')
-            setSnackbarMessage('Ooops, unknown error!')
-        } 
+            const loginData = JSON.stringify(result.data.data)
+            localStorage.setItem('loginData', loginData)
+            props.enqueueSnackbar('Login success!', {variant: 'success'})
+        }
     }).catch(error => {
         if(!error.response){
-            setSnackbarSeverity('error')
-            setSnackbarMessage('Connection error!')
+          props.enqueueSnackbar('Connection error!', {variant: 'error'})
         } else {
-            setSnackbarSeverity('error')
-            setSnackbarMessage('Login error!')
+          if(error.response.data.errors){
+            error.response.data.errors.forEach( e => {
+              props.enqueueSnackbar(e.message, {variant: 'error'})
+            })
+          }
         }
     })
-    setSnackbarShow(true)
   }
-
-  const handleSnackbarClose = (event, reason) =>{
-    if (reason === 'clickaway') {
-          return;
-        }
-        setSnackbarShow(false);
-  }
-    const classes = useStyles();
     return (
       <Container component="main" maxWidth="xs">
         <CssBaseline />
@@ -142,9 +133,8 @@ export default function Login(props) {
             </Grid>
           </form>
         </div>
-        <Snackbar open={snackbarShow} autoHideDuration={5000} onClose={handleSnackbarClose}>
-            <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} elevation={6} variant="filled">{snackbarMessage}</Alert>
-        </Snackbar>
       </Container>
     )
 }
+
+export default withSnackbar(Login)

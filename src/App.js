@@ -5,6 +5,7 @@ import Home from './pages/Home'
 import Login from './pages/Login'
 import Statistics from './pages/Statistics'
 import Axios from 'axios';
+import Test from './pages/Test'
 
 
 class App extends React.Component {
@@ -19,6 +20,7 @@ class App extends React.Component {
           <Route path='/home'><Home /></Route>
           <Route path='/login'><Login {...this.props}/></Route>
           <Route path='/statistics'><Statistics /></Route>
+          <Route path='/test'><Test {...this.props}/></Route>
         </Switch>
       </BrowserRouter>
       </div>
@@ -26,4 +28,4 @@ class App extends React.Component {
   }
 }
 
-export default App;
+export default App
