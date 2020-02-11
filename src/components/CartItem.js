@@ -20,7 +20,7 @@ import currencyFormatter from 'currency-formatter'
 import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';
 import InputBase from '@material-ui/core/InputBase';
-import { TextField } from '@material-ui/core';
+import { TextField, withStyles } from '@material-ui/core';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -28,63 +28,58 @@ const useStyles = makeStyles(theme => ({
     maxWidth: 360,
     backgroundColor: theme.palette.background.paper,
   },
+  plusminus: {
+    maxWidth: '150px',
+    "& *" : {
+      padding: '0 !important',
+      margin: 0
+    },
+    "& input": {
+      textAlign:'center'
+    }
+  },
 }));
 
 export default function CartItem(props) {
   const classes = useStyles();
 
-  function onDeleteClicked(){
-    const newCartItems = props.cartItems.filter((item) => {
-      if(props.cartItem.id === item.id) return false
-      else return true
-    })
-    props.setCartItems(newCartItems)
+  function onDelete(){
+    props.cartAction.removeItem(props.target.id)
   }
 
-  function onDecrementCartItem(){
-    var newCartItems = props.cartItems.map(item => {
-      if(item.id === props.cartItem.id) {
-        item.qty--
-        return item
-      } else return item
-    })
-    newCartItems = newCartItems.filter(item => {
-      if(item.qty) return true
-      else return false
-    })
-    props.setCartItems(newCartItems)
+  function onDecrement(){
+    props.cartAction.decreaseItem(props.target.id)
   }
 
-  function onIncrementCartItem(){
-    var newCartItems = props.cartItems.map(item => {
-      if(item.id === props.cartItem.id) {
-        item.qty++
-        return item
-      } else return item
-    })
-    props.setCartItems(newCartItems)
+  function onIncrement(){
+    props.cartAction.increaseItem(props.target.id)
   }
 
   return (
     <React.Fragment>
-      <ListItem button>
+      <ListItem dense button style={{flexWrap:'wrap'}}>
+
         <ListItemAvatar>
-            <StyledBadge badgeContent={props.cartItem.qty} color="secondary">
+            <StyledBadge badgeContent={props.target.qty} color="secondary">
               <Avatar><WorkIcon /></Avatar>
             </StyledBadge>
         </ListItemAvatar>
-        <ListItemText primary={currencyFormatter.format(props.cartItem.price,{code:'IDR'})} secondary={props.cartItem.name} />
-        <ListItemSecondaryAction>
-          <IconButton edge="end" aria-label="delete" onClick={onDeleteClicked}>
+        <ListItemText primary={currencyFormatter.format(props.target.price,{code:'IDR'})} secondary={props.target.name} />
+          <IconButton edge="end" aria-label="delete" onClick={onDelete}>
             <DeleteIcon />
           </IconButton>
-        </ListItemSecondaryAction>
+
+        <div style={{flexBasis:'100%', textAlign:'center'}}>
+          <ButtonGroup size="small" className={classes.plusminus} aria-label="small outlined button group" >
+            <Button size='small' onClick={onDecrement}>-</Button>
+            <Button size='small'>
+              <InputBase value={props.target.qty} style={{textAlign:'center'}} />
+            </Button>
+            <Button size='small' onClick={onIncrement}>+</Button>
+          </ButtonGroup>
+        </div>
+        
       </ListItem>
-       <ButtonGroup size="small" aria-label="small outlined button group">
-          <Button onClick={onDecrementCartItem}>-</Button>
-          <Button style={{maxWidth:'15px'}}><InputBase value={props.cartItem.qty} style={{textAlign:'center'}}></InputBase></Button>
-          <Button onClick={onIncrementCartItem}>+</Button>
-        </ButtonGroup>
       <Divider />
     </React.Fragment>
   );

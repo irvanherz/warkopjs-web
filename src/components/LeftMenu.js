@@ -50,7 +50,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function MainDrawer(props) {
+export default function LeftMenu(props) {
   const classes = useStyles();
   const history = useHistory()
 
@@ -58,35 +58,18 @@ export default function MainDrawer(props) {
     <React.Fragment>
       <Drawer
         variant="permanent"
-        className={clsx(classes.drawer, { [classes.drawerOpen]: props.state, [classes.drawerClose]: !props.state, })}
+        className={clsx(classes.drawer, { [classes.drawerOpen]: props.miscData.openLeftMenu, [classes.drawerClose]: !props.miscData.openLeftMenu, })}
         classes={{
-          paper: clsx({ [classes.drawerOpen]: props.state, [classes.drawerClose]: !props.state })
+          paper: clsx({ [classes.drawerOpen]: props.miscData.openLeftMenu, [classes.drawerClose]: !props.miscData.openLeftMenu })
         }}
       >
         <div className={classes.toolbar}>
-          <IconButton onClick={e => props.setState(false)}>
+          <IconButton onClick={e => props.miscAction.setState({openLeftMenu:false})}>
             <ChevronLeftIcon />
           </IconButton>
         </div>
         <Divider />
-        <List>
-          <ListItem button key='addproduct' onClick={() => { props.setAddProductDialogState(true) }}>
-            <ListItemIcon><PostAddIcon /></ListItemIcon>
-            <ListItemText primary='Add New Product' />
-          </ListItem>
-        </List>
-        <List>
-          <ListItem button key='stats' onClick={() => { history.push("/statistics") }} >
-            <ListItemIcon><InsertChartOutlinedOutlinedIcon /></ListItemIcon>
-            <ListItemText primary='Statistics' />
-          </ListItem>
-        </List>
-        <List>
-          <ListItem button key='signout' onClick={() => { localStorage.removeItem('loginData'); return (<Redirect push to='/login' />) }}>
-            <ListItemIcon><ExitToAppIcon /></ListItemIcon>
-            <ListItemText primary='Sign out' />
-          </ListItem>
-        </List>
+        {props.content}
       </Drawer>
     </React.Fragment>
   )

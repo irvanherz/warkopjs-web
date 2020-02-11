@@ -11,7 +11,7 @@ import StyledBadge from '@material-ui/core/Badge';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import ProfileMenu from './ProfileMenu'
 
-import SearchBar from './SearchBar'
+
 
 
 const drawerWidth = 240;
@@ -105,31 +105,25 @@ export default function MainAppBar(props) {
   const classes = useStyles();
   //Render
   return (
-    <AppBar position="fixed" className={[classes.appBar, (props.mainDrawerState ? classes.appBarShift : ""), classes.appBar2, (props.cartDrawerState ? classes.appBarShift2 : ""), classes.appBar3, ((props.mainDrawerState && props.cartDrawerState) ? classes.appBarShift3 : "")].join(" ")}>
+    <AppBar position="fixed" className={[classes.appBar, (props.miscData.openLeftMenu ? classes.appBarShift : ""), classes.appBar2, (props.miscData.openRightMenu ? classes.appBarShift2 : ""), classes.appBar3, ((props.miscData.openLeftMenu && props.miscData.openRightMenu) ? classes.appBarShift3 : "")].join(" ")}>
+      
       <Toolbar>
-        <IconButton color="inherit" aria-label="open drawer" onClick={e => props.setMainDrawerState(true)} edge="start" className={clsx(classes.menuButton, { [classes.hide]: props.mainDrawerState, })}>
-          <MenuIcon />
+        {props.leftMenu && (
+        <IconButton color="inherit" aria-label="open drawer" onClick={e => props.miscAction.setState({openLeftMenu: true})} edge="start" className={clsx(classes.menuButton, { [classes.hide]: props.miscData.openLeftMenu, })}>
+          {props.leftMenuIcon ? (props.leftMenuIcon) : (<MenuIcon />)}
         </IconButton>
+        )}
         <Typography variant="h6" noWrap className={classes.title2}>
-          ReactPOS
-          </Typography>
-
-        <SearchBar viewParameters={props.viewParameters} setViewParameters={props.setViewParameters} />
-
-        <ProfileMenu />
-        <IconButton aria-label="cart" color="inherit"
-          edge="end"
-          onClick={e => props.setCartDrawerState(true)}
-          className={clsx(props.cartDrawerState && classes.hide)}>
-          {
-            props.cartItems.length ? (
-              <StyledBadge badgeContent={props.cartItems.length} color="secondary">
-                <ShoppingCartIcon />
-              </StyledBadge>
-            ) : (
-                <ShoppingCartIcon />)
-          }
+          Warkop.js
+        </Typography>
+        <ProfileMenu {...props} />
+        {props.rightMenu && (
+        <IconButton aria-label="cart" color="inherit" edge="end" onClick={e =>props.miscAction.setState({openRightMenu: true})} 
+          className={clsx(props.miscData.openRightMenu && classes.hide)}
+        >
+          {props.rightMenuIcon ? (props.rightMenuIcon) : (<MenuIcon />)}
         </IconButton>
+        )}
       </Toolbar>
     </AppBar>
   )

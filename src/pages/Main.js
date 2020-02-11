@@ -1,12 +1,10 @@
 import React from "react"
 import {Redirect, withRouter} from 'react-router-dom'
 
-class Main extends React.Component {
-    render(){
-        const loginData = localStorage.getItem('loginData')
-        if(!loginData) return(<Redirect push to='/login' />)
-        else return(<Redirect push to='/home' />)
-    }
+function Main(props) {
+    if(!props.authData.data.id) props.history.push('/signin')
+    else props.history.push('/home')
+    return null
 }
 
 export default Main

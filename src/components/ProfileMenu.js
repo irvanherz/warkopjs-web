@@ -6,14 +6,24 @@ import Popover from '@material-ui/core/Popover';
 import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
 import IconButton from '@material-ui/core/IconButton';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-export default function ProfileMenu() {
+import Avatar from '@material-ui/core/Avatar';
+import { List } from '@material-ui/core';
+
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+
+export default function ProfileMenu(props) {
+  function onSignout() {
+    props.authAction.unsetLoginData()
+    props.history.push('/')
+  }
   return (
     <PopupState variant="popover" popupId="demo-popup-popover">
       {popupState => (
         <div>
           <IconButton aria-label="cart" color="inherit" edge="end"  {...bindTrigger(popupState)}>
             <AccountCircleIcon />
-            </IconButton>
+          </IconButton>
           <Popover
             {...bindPopover(popupState)}
             anchorOrigin={{
@@ -25,8 +35,16 @@ export default function ProfileMenu() {
               horizontal: 'center',
             }}
           >
-            <Box p={2}>
-              <Typography>The content of the Popover.</Typography>
+            <Box p={1} style={{minWidth:'200px'}}>
+              <Avatar style={{margin:'auto'}} ><AccountCircleIcon /></Avatar>
+              <List>
+                <ListItem dense button>
+                  <ListItemText primary='Edit Profile' />
+                </ListItem>
+                <ListItem dense button>
+                  <ListItemText primary='Sign out' onClick={onSignout} />
+                </ListItem>
+              </List>
             </Box>
           </Popover>
         </div>

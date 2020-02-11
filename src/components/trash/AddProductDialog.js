@@ -11,7 +11,6 @@ import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
-import 'react-image-crop/dist/ReactCrop.css';
 import axios from 'axios'
 import { withSnackbar } from 'notistack';
 import { Redirect } from 'react-router-dom'
@@ -25,7 +24,7 @@ function AddProductDialog(props) {
   const [price, setPrice] = React.useState('');
 
   React.useEffect(() => {
-    axios.get('http://127.0.0.1:3001/categories')
+    axios.get('http://127.0.0.1:3001/categories', {headers:{Authorization: props.authData.data.token} })
     .then(result => {
         setCategories(result.data.data.items)
     })
@@ -49,7 +48,8 @@ function AddProductDialog(props) {
     formData.append('category_id', category)
     formData.append('image', image)
     formData.append('price', price)
-    axios.post('http://localhost:3001/products', formData, {headers: {'content-type': 'multipart/form-data'}})
+
+    axios.post('http://localhost:3001/products', formData, {headers: {'Authorization': props.authData.data.token, 'content-type': 'multipart/form-data'}} )
     .then(result => {
       if(result.status === 200){
           props.enqueueSnackbar('Product was added.', {variant: 'success'})

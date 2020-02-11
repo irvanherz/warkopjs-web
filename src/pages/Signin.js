@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import {Redirect} from 'react-router-dom'
+import {Redirect, Link} from 'react-router-dom'
 import { withSnackbar } from 'notistack';
 import {
   Avatar,
@@ -8,16 +8,21 @@ import {
   TextField,
   FormControlLabel,
   Checkbox,
-  Link,
   Grid,
   Box,
   Typography,
-  Container, Snackbar
+  Container, Snackbar, CardMedia
 } from "@material-ui/core";
 import Alert from '@material-ui/lab/Alert'
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import { makeStyles } from "@material-ui/core/styles";
 import Axios from "axios";
+
+
+import {setLoginData, unsetLoginData} from "../public/redux/actions/auth";
+import {connect} from 'react-redux'
+
+import qs from 'qs'
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -39,7 +44,8 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function Login(props) {
+function Signin(props) {
+  if(props.authData.data.id) props.history.push('/home')
   const [username, setUsername] = React.useState("")
   const [password, setPassword] = React.useState("")
   const classes = useStyles();
@@ -48,12 +54,13 @@ function Login(props) {
   if(loginData) return(<Redirect push to='/home' />)
   const handleSubmit = (event) => {
     event.preventDefault()
-    Axios.post('http://127.0.0.1:3001/auth/signin', {username, password})
+    const credentials = {username, password}
+    Axios.post('http://127.0.0.1:3001/auth/signin', credentials)
     .then(result => {
         if(result.status === 200){
-            const loginData = JSON.stringify(result.data.data)
-            localStorage.setItem('loginData', loginData)
             props.enqueueSnackbar('Login success!', {variant: 'success'})
+            props.authAction.setLoginData(result.data.data)
+            props.history.push('/home')
         }
     }).catch(error => {
         if(!error.response){
@@ -71,12 +78,13 @@ function Login(props) {
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <div className={classes.paper}>
-          <Avatar className={classes.avatar}>
+          {/* <Avatar className={classes.avatar}>
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
             Sign in
-          </Typography>
+          </Typography> */}
+           <img src='/login_logo.png' />
           <form onSubmit={handleSubmit} className={classes.form} noValidate>
             <TextField
               onChange={event => setUsername(event.target.value)}
@@ -85,9 +93,9 @@ function Login(props) {
               required
               fullWidth
               id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
+              label="Username"
+              name="username"
+              autoComplete="username"
               helperText="Enter your username"
               autoFocus
             />
@@ -126,8 +134,8 @@ function Login(props) {
                 </Link>
               </Grid>
               <Grid item>
-                <Link href="#" variant="body2">
-                  {"Don't have an account? Sign Up"}
+                <Link to="signup" variant="body2">
+                  Don't have an account? Sign Up"
                 </Link>
               </Grid>
             </Grid>
@@ -137,4 +145,21 @@ function Login(props) {
     )
 }
 
-export default withSnackbar(Login)
+const mapDispatchToProps = dispatch => ({
+  authAction: {
+    setLoginData: data => {
+      dispatch(setLoginData(data))
+    },
+    unsetLoginData: () => {
+      dispatch(unsetLoginData())
+    }
+  }
+})
+
+
+const mapStateToProps = state => {
+  return {
+    authData: state.auth
+  }
+}
+export default connect(mapStateToProps, mapDispatchToProps)(withSnackbar(Signin))
