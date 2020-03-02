@@ -28,6 +28,17 @@ const useStyles = makeStyles(theme => ({
     maxWidth: 360,
     backgroundColor: theme.palette.background.paper,
   },
+  badge:{
+    "& .MuiBadge-badge": {
+      top:'8px',
+      right: '8px'
+    }
+  },
+  listItem: {
+    "& p": {
+      maxWidth:'fit-content'
+    }
+  },
   plusminus: {
     maxWidth: '150px',
     "& *" : {
@@ -60,16 +71,16 @@ export default function CartItem(props) {
       <ListItem dense button style={{flexWrap:'wrap'}}>
 
         <ListItemAvatar>
-            <StyledBadge badgeContent={props.target.qty} color="secondary">
+            <StyledBadge className={classes.badge} badgeContent={props.target.qty} color="secondary">
               <Avatar><WorkIcon /></Avatar>
             </StyledBadge>
         </ListItemAvatar>
-        <ListItemText primary={currencyFormatter.format(props.target.price,{code:'IDR'})} secondary={props.target.name} />
+        <ListItemText className={classes.listItem} primary={currencyFormatter.format(props.target.price,{code:'IDR'})} secondary={props.target.name} />
           <IconButton edge="end" aria-label="delete" onClick={onDelete}>
             <DeleteIcon />
           </IconButton>
 
-        <div style={{flexBasis:'100%', textAlign:'center'}}>
+        <div style={{ flexBasis: '100%', textAlign: 'center', borderTop: '1px solid #ddd', paddingTop: '4px'}}>
           <ButtonGroup size="small" className={classes.plusminus} aria-label="small outlined button group" >
             <Button size='small' onClick={onDecrement}>-</Button>
             <Button size='small'>

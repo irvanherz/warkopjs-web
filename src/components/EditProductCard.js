@@ -39,18 +39,15 @@ const useStyles = makeStyles(theme => ({
 export default function EditProductCard(props) {
     const classes = useStyles();
 
-    function onClickProduct() {
-        
-    }
 
     return (
         <React.Fragment>
             <Card className={classes.card}>
-                <CardActionArea focusRipple key={props.target.name} focusVisibleClassName={classes.focusVisible} onClick={onClickProduct}>
+                <CardActionArea focusRipple key={props.target.name} focusVisibleClassName={classes.focusVisible}>
                     <div style={{ display: "block", position: "relative" }}>
                         <CardMedia className={classes.media}
                             component="img"
-                            image={props.target.image ? `http://localhost:3001/assets/${props.target.image}` : 'http://localhost:3001/assets/noimage.jpg'}
+                            image={props.target.image ? `${props.target.image}` : 'http://localhost:3001/assets/noimage.jpg'}
                             title="Contemplative Reptile"
                         ></CardMedia>
                     </div>

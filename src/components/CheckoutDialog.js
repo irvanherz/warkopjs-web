@@ -105,12 +105,14 @@ export default function CheckoutDialog(props) {
 
   return (
     <React.Fragment>
+      <div style={{padding:"8px"}}>
       <Button onClick={e => {setCheckoutDialog(true); setActiveStep(0)} } variant="contained" color="primary" edge='end' fullWidth style={{ marginBottom: '8px' }}>
         Checkout
       </Button>
       <Button onClick={e => props.cartAction.clearItems() } variant="contained" color="secondary" edge='end' fullWidth>
         Clear
       </Button>
+      </div>
      <Dialog fullWidth className={classes.paper} onClose={e => setCheckoutDialog(false)} open={checkoutDialog}>
         <DialogTitle id="customized-dialog-title" onClose={e => setCheckoutDialog(false)}>
           <Typography component="h1" variant="h4" align="center">

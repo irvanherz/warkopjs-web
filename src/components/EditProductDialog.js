@@ -20,11 +20,31 @@ import {withSnackbar} from 'notistack'
 import Axios from 'axios';
 
 function CheckoutDialog(props) {
-  console.log(props)
   const [editProductDialog, setEditProductDialog] = React.useState(false)
   const [deleteProductDialog, setDeleteProductDialog] = React.useState(false)
   const [editData, setEditData] = React.useState({})
-  
+
+  function reloadProducts(params) {
+    Axios.get('http://127.0.0.1:3001/products', { headers: { 'Authorization': props.authData.data.token }, params: params })
+      .then(response => {
+        if (response.status === 200) {
+          props.productAction.setData(response.data.data)
+        }
+      })
+      .catch(error => {
+        if (!error.response) {
+          props.enqueueSnackbar('Connection error!', { variant: 'error' })
+        } else {
+          if (error.response.data.errors) {
+            error.response.data.errors.forEach(e => {
+              props.enqueueSnackbar(e.message, { variant: 'error' })
+            })
+          } else {
+            props.enqueueSnackbar('Unknown server error', { variant: 'error' })
+          }
+        }
+      })
+  }
 
   function onDelete(id) {
     Axios.delete('http://127.0.0.1:3001/products/' + id, {headers:{'Authorization': props.authData.data.token} } )
@@ -32,7 +52,7 @@ function CheckoutDialog(props) {
       if (response.status === 200) {
           props.enqueueSnackbar('Product succesfully deleted.', { variant: 'success' })
           setDeleteProductDialog(false)
-          props.productAction.reload(props.productData.params)
+          reloadProducts(props.productData.params)
       }
     })
     .catch(error => {
@@ -55,30 +75,33 @@ function CheckoutDialog(props) {
         formData.append(key, editData[key])  
     })
     Axios.put('http://127.0.0.1:3001/products/' + id, formData, {headers:{'Authorization': props.authData.data.token} })
-      .then(response => {
+      .then(
+        response => {
         if (response.status === 200) {
             props.enqueueSnackbar('Product order successfully modified', { variant: 'success' })
             setEditProductDialog(false)
-            props.productAction.reload(props.productData.params)
+            reloadProducts(props.productData.params)
         }
-      })
-      .catch(error => {
+      },
+        error => {
           if (!error.response) {
-              props.enqueueSnackbar('Connection error!', { variant: 'error' })
+            props.enqueueSnackbar('Connection error!', { variant: 'error' })
           } else {
-              if (error.response.data.errors) {
-                  error.response.data.errors.forEach(e => {
-                      props.enqueueSnackbar(e.message, { variant: 'error' })
-                  })
-              }
+            if (error.response.data.errors) {
+              error.response.data.errors.forEach(e => {
+                props.enqueueSnackbar(e.message, { variant: 'error' })
+              })
+            }
           }
-      })
+        }
+      )
   }
 
   function onChangeData(field, value){
       const newEditData = {...editData}
       newEditData[field] = value
       setEditData(newEditData)
+      console.log(props.target)
   }
 
   return (

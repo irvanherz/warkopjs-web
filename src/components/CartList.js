@@ -21,16 +21,16 @@ function CartList(props) {
 
   return (
     <React.Fragment>
-      <div style={{ flexGrow: 1 }}>
+      <div style={{ flexGrow: 1, overflowY: "scroll" }}>
         {cartItemCount ? (
             <List className={classes.root} style={{ paddingTop: 0 }}>
               {props.cartData.items.map((item) => <CartItem key={item.name} target={item} {...props} />)}
             </List>
           ) : (
-              <img alt='Your cart is empty!' src='http://localhost:3001/assets/emptycart.png' style={{ width: '100%', height: 'auto' }} />
+            <img alt='Your cart is empty!' src={`${process.env.PUBLIC_URL}/empty_cart.gif`} style={{ width: '100%', height: 'auto' }} />
           )}
       </div>
-      {cartItemCount && <CheckoutDialog {...props} /> }
+      {cartItemCount ? <CheckoutDialog {...props} /> : null}
     </React.Fragment>
   )
 }

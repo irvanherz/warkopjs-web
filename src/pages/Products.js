@@ -31,6 +31,7 @@ function Products(props) {
         if (response.status === 200)
             props.categoryAction.setData(response.data.data)
       })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   //Render

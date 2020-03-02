@@ -37,6 +37,28 @@ export default function EditProductList(props){
     const [openDialog, setOpenDialog] = React.useState(false)
     const [postData, setPostData] = React.useState({})
 
+    function reloadProducts(params) {
+        Axios.get('http://127.0.0.1:3001/products', { headers: { 'Authorization': props.authData.data.token }, params: params })
+            .then(response => {
+                if (response.status === 200) {
+                    props.productAction.setData(response.data.data)
+                }
+            })
+            .catch(error => {
+                if (!error.response) {
+                    props.enqueueSnackbar('Connection error!', { variant: 'error' })
+                } else {
+                    if (error.response.data.errors) {
+                        error.response.data.errors.forEach(e => {
+                            props.enqueueSnackbar(e.message, { variant: 'error' })
+                        })
+                    } else {
+                        props.enqueueSnackbar('Unknown server error', { variant: 'error' })
+                    }
+                }
+            })
+    }
+
     function onChangeData(field, value) {
         const newPostData = { ...postData }
         newPostData[field] = value
@@ -50,7 +72,7 @@ export default function EditProductList(props){
                 if (response.status === 200) {
                     props.enqueueSnackbar('Product order successfully added to database.', { variant: 'success' })
                     setOpenDialog(false)
-                    props.productAction.reload(props.productData.params)
+                    reloadProducts(props.productData.params)
                 }
             }).catch(error => {
                 if (!error.response) {

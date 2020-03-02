@@ -54,7 +54,7 @@ export default function ProductCard(props) {
                     <div style={{ display: "block", position: "relative" }}>
                         <CardMedia className={classes.media}
                             component="img"
-                            image={props.product.image ? `http://localhost:3001/assets/${props.product.image}` : 'http://localhost:3001/assets/noimage.jpg'}
+                            image={props.product.image ? `${props.product.image}` : 'http://localhost:3001/assets/noimage.jpg'}
                             title="Contemplative Reptile"
                         ></CardMedia>
                         {isOnCart ?
