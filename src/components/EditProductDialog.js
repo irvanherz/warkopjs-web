@@ -25,7 +25,7 @@ function CheckoutDialog(props) {
   const [editData, setEditData] = React.useState({})
 
   function reloadProducts(params) {
-    Axios.get('http://127.0.0.1:3001/products', { headers: { 'Authorization': props.authData.data.token }, params: params })
+    Axios.get(`${process.env.REACT_APP_API_HOST}/products`, { headers: { 'Authorization': props.authData.data.token }, params: params })
       .then(response => {
         if (response.status === 200) {
           props.productAction.setData(response.data.data)
@@ -47,7 +47,7 @@ function CheckoutDialog(props) {
   }
 
   function onDelete(id) {
-    Axios.delete('http://127.0.0.1:3001/products/' + id, {headers:{'Authorization': props.authData.data.token} } )
+    Axios.delete(`${process.env.REACT_APP_API_HOST}/products/` + id, {headers:{'Authorization': props.authData.data.token} } )
     .then(response => {
       if (response.status === 200) {
           props.enqueueSnackbar('Product succesfully deleted.', { variant: 'success' })
@@ -74,7 +74,7 @@ function CheckoutDialog(props) {
     Object.keys(editData).forEach(key => {
         formData.append(key, editData[key])  
     })
-    Axios.put('http://127.0.0.1:3001/products/' + id, formData, {headers:{'Authorization': props.authData.data.token} })
+    Axios.put(`${process.env.REACT_APP_API_HOST}/products/` + id, formData, {headers:{'Authorization': props.authData.data.token} })
       .then(
         response => {
         if (response.status === 200) {

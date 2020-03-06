@@ -36,7 +36,7 @@ export default function CartItem(props) {
     }
 
     function onEdit() {
-        Axios.put('http://127.0.0.1:3001/categories/' + props.target.id, editData, {headers:{'Authorization': props.authData.data.token} })
+      Axios.put(`${process.env.REACT_APP_API_HOST}/categories/` + props.target.id, editData, {headers:{'Authorization': props.authData.data.token} })
         .then(response => {
             if (response.status === 200) {
                 props.enqueueSnackbar('Category successfully modified', { variant: 'success' })
@@ -58,7 +58,7 @@ export default function CartItem(props) {
     }
 
     function onDelete() {
-        Axios.delete('http://127.0.0.1:3001/categories/' + props.target.id, {headers:{'Authorization': props.authData.data.token} } )
+      Axios.delete(`${process.env.REACT_APP_API_HOST}/categories/` + props.target.id, {headers:{'Authorization': props.authData.data.token} } )
         .then(response => {
         if (response.status === 200) {
             props.enqueueSnackbar('Category succesfully deleted.', { variant: 'success' })

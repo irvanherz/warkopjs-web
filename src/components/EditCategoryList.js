@@ -36,7 +36,7 @@ export default function EditCategoryList(props){
     const [postData, setPostData] = React.useState({})
 
     function reloadList(params={}){
-        Axios.get('http://127.0.0.1:3001/categories', {headers:{'Authorization': props.authData.data.token}, params:params } )
+        Axios.get(`${process.env.REACT_APP_API_HOST}/categories`, {headers:{'Authorization': props.authData.data.token}, params:params } )
             .then(response => {
                 if (response.status === 200) {
                     props.categoryAction.setData(response.data.data)
@@ -64,7 +64,7 @@ export default function EditCategoryList(props){
 
     function onAddCategory() {
         const payload=postData
-        Axios.post('http://127.0.0.1:3001/categories', payload, {headers:{'Authorization': props.authData.data.token} } )
+        Axios.post(`${process.env.REACT_APP_API_HOST}/categories`, payload, {headers:{'Authorization': props.authData.data.token} } )
             .then(response => {
                 if (response.status === 200) {
                     props.enqueueSnackbar('Category successfully added to database.', { variant: 'success' })

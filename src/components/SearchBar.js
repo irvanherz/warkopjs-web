@@ -74,7 +74,7 @@ export default function SearchBar(props) {
   const classes = useStyles();
 
   function reloadProducts(params){
-    Axios.get('http://127.0.0.1:3001/products', {headers:{'Authorization': props.authData.data.token}, params:params } )
+    Axios.get(`${process.env.REACT_APP_API_HOST}/products`, {headers:{'Authorization': props.authData.data.token}, params:params } )
           .then(response => {
             if (response.status === 200) {
               props.productAction.setData(response.data.data)

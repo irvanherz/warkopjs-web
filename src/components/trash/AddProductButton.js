@@ -30,7 +30,7 @@ function AddProductButton(props) {
 
     function onAdd() {
         const payload=postData
-        Axios.post('http://127.0.0.1:3001/products', payload, {headers:{Authorization: props.authData.data.token} })
+        Axios.post(`${process.env.REACT_APP_API_HOST}/products`, payload, {headers:{Authorization: props.authData.data.token} })
             .then(response => {
                 if (response.status === 200) {
                     props.enqueueSnackbar('Product order successfully added to database.', { variant: 'success' })

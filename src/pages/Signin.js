@@ -55,7 +55,7 @@ function Signin(props) {
   const handleSubmit = (event) => {
     event.preventDefault()
     const credentials = {username, password}
-    Axios.post('http://127.0.0.1:3001/auth/signin', credentials)
+    Axios.post(`${process.env.REACT_APP_API_HOST}/auth/signin`, credentials)
     .then(result => {
         if(result.status === 200){
             props.enqueueSnackbar('Login success!', {variant: 'success'})

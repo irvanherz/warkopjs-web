@@ -38,7 +38,7 @@ function UserItem(props) {
     const [editedData, setEditedData] = React.useState({})
 
     function reloadList(params={}){
-        Axios.get('http://127.0.0.1:3001/users', {headers:{'Authorization': props.authData.data.token}, params:params } )
+        Axios.get(`${process.env.REACT_APP_API_HOST}/users`, {headers:{'Authorization': props.authData.data.token}, params:params } )
             .then(response => {
                 if (response.status === 200) {
                     props.userAction.setData(response.data.data)
@@ -65,7 +65,7 @@ function UserItem(props) {
     }
 
     function onEdit(id){
-        Axios.put('http://127.0.0.1:3001/users/' + id, editedData, {headers:{'Authorization': props.authData.data.token} } )
+        Axios.put(`${process.env.REACT_APP_API_HOST}/users/` + id, editedData, {headers:{'Authorization': props.authData.data.token} } )
           .then(response => {
             if (response.status === 200) {
                 props.enqueueSnackbar('User successfully modified', { variant: 'success' })
@@ -89,7 +89,7 @@ function UserItem(props) {
     }
 
     function onDelete() {
-        Axios.delete('http://127.0.0.1:3001/users/' + props.target.id, {headers:{'Authorization': props.authData.data.token} } )
+        Axios.delete(`${process.env.REACT_APP_API_HOST}/users/` + props.target.id, {headers:{'Authorization': props.authData.data.token} } )
         .then(response => {
           if (response.status === 200) {
               props.enqueueSnackbar('Product succesfully deleted.', { variant: 'success' })

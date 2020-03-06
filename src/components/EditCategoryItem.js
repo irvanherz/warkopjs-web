@@ -59,7 +59,7 @@ export default function EditCategoryItem(props) {
     const [editedData, setEditedData] = React.useState({})
 
     function reloadList(params={}){
-        Axios.get('http://127.0.0.1:3001/categories', {headers:{'Authorization': props.authData.data.token}, params:params } )
+        Axios.get(`${process.env.REACT_APP_API_HOST}/categories`, {headers:{'Authorization': props.authData.data.token}, params:params } )
             .then(response => {
                 if (response.status === 200) {
                     props.categoryAction.setData(response.data.data)
@@ -86,7 +86,7 @@ export default function EditCategoryItem(props) {
     }
 
     function onEditCategory(){
-        Axios.put('http://127.0.0.1:3001/categories/' + props.target.id, editedData, {headers:{'Authorization': props.authData.data.token} } )
+        Axios.put(`${process.env.REACT_APP_API_HOST}/categories/` + props.target.id, editedData, {headers:{'Authorization': props.authData.data.token} } )
           .then(response => {
             if (response.status === 200) {
                 props.enqueueSnackbar('User successfully modified', { variant: 'success' })
@@ -110,7 +110,7 @@ export default function EditCategoryItem(props) {
     }
 
     function onDelete(){
-        Axios.delete('http://127.0.0.1:3001/categories/' + props.target.id, {headers:{'Authorization': props.authData.data.token} } )
+        Axios.delete(`${process.env.REACT_APP_API_HOST}/categories/` + props.target.id, {headers:{'Authorization': props.authData.data.token} } )
         .then(response => {
         if (response.status === 200) {
             props.enqueueSnackbar('Category succesfully deleted.', { variant: 'success' })

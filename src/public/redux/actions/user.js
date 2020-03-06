@@ -5,7 +5,7 @@ import Axios from "axios"
 //     return {
 //         type: 'USER_RELOAD',
 //         params: params,
-//         payload: Axios.get('http://127.0.0.1:3001/users?' + queries.join('&'), {headers:{'Authorization': props.authData.data.token} })
+//         payload: Axios.get(`${process.env.REACT_APP_API_HOST}/users?` + queries.join('&'), {headers:{'Authorization': props.authData.data.token} })
 //     }
 // }
 

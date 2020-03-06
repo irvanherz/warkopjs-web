@@ -54,7 +54,7 @@ export default function CheckoutDialog(props) {
   const handlePlaceOrder = () => {
     const payload = {orderItems:[]}
     payload.orderItems = props.cartData.items.map(item => ({product_id: item.id, qty: item.qty}))
-    Axios.post('http://127.0.0.1:3001/orders', payload, {headers:{'Authorization': props.authData.data.token} } )
+    Axios.post(`${process.env.REACT_APP_API_HOST}/orders`, payload, {headers:{'Authorization': props.authData.data.token} } )
     .then(response => {
       if(response.status === 200){
         props.enqueueSnackbar('Order placed', {variant: 'success'})

@@ -50,7 +50,7 @@ export default function Signup(props) {
     event.preventDefault()
     setPostData({...postData, role:1})
     
-    Axios.post('http://127.0.0.1:3001/auth/signup', postData)
+    Axios.post(`${process.env.REACT_APP_API_HOST}/auth/signup`, postData)
             .then(response => {
                 if (response.status === 200) {
                     props.enqueueSnackbar('Account registration success. But you must wait administrator to verify your account before you can login.', { variant: 'success' })

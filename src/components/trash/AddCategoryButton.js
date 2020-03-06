@@ -30,7 +30,7 @@ function AddCategoryButton(props) {
 
     function onAdd() {
         const payload=postData
-        Axios.post('http://127.0.0.1:3001/categories', payload, {headers:{Authorization: props.authData.data.token} })
+        Axios.post(`${process.env.REACT_APP_API_HOST}/categories`, payload, {headers:{Authorization: props.authData.data.token} })
             .then(response => {
                 if (response.status === 200) {
                     props.enqueueSnackbar('Category successfully added to database.', { variant: 'success' })

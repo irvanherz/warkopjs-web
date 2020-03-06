@@ -20,12 +20,12 @@ function Home(props) {
   //Init
   useEffect(() => {
     props.miscAction.setState({openLeftMenu: false, openRightMenu: false})
-    Axios.get('http://127.0.0.1:3001/users', {headers:{'Authorization': props.authData.data.token}} )
+    Axios.get(`${process.env.REACT_APP_API_HOST}/users`, {headers:{'Authorization': props.authData.data.token}} )
       .then(response => {
         if (response.status === 200)
             props.userAction.setData(response.data.data)
-      })
-  }, [])
+   [props.authData.data.token, props.miscAction, props.userAction] })
+  }, [props.authData.data.token, props.miscAction, props.userAction])
 
   //Render
   return (

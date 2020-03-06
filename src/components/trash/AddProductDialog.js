@@ -24,7 +24,7 @@ function AddProductDialog(props) {
   const [price, setPrice] = React.useState('');
 
   React.useEffect(() => {
-    axios.get('http://127.0.0.1:3001/categories', {headers:{Authorization: props.authData.data.token} })
+    axios.get(`${process.env.REACT_APP_API_HOST}/categories`, {headers:{Authorization: props.authData.data.token} })
     .then(result => {
         setCategories(result.data.data.items)
     })

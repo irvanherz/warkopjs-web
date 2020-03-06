@@ -38,7 +38,7 @@ export default function EditProductList(props){
     const [postData, setPostData] = React.useState({})
 
     function reloadProducts(params) {
-        Axios.get('http://127.0.0.1:3001/products', { headers: { 'Authorization': props.authData.data.token }, params: params })
+        Axios.get(`${process.env.REACT_APP_API_HOST}/products`, { headers: { 'Authorization': props.authData.data.token }, params: params })
             .then(response => {
                 if (response.status === 200) {
                     props.productAction.setData(response.data.data)
@@ -67,7 +67,7 @@ export default function EditProductList(props){
 
     function onAddProduct() {
         const payload=postData
-        Axios.post('http://127.0.0.1:3001/products', payload, {headers:{'Authorization': props.authData.data.token} })
+        Axios.post(`${process.env.REACT_APP_API_HOST}/products`, payload, {headers:{'Authorization': props.authData.data.token} })
             .then(response => {
                 if (response.status === 200) {
                     props.enqueueSnackbar('Product order successfully added to database.', { variant: 'success' })

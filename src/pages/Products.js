@@ -20,13 +20,13 @@ function Products(props) {
   useEffect(() => {
     props.miscAction.setState({openLeftMenu: false, openRightMenu: false})
     //Load initial products
-    Axios.get('http://127.0.0.1:3001/products', {headers:{'Authorization': props.authData.data.token}} )
+    Axios.get(`${process.env.REACT_APP_API_HOST}/products`, {headers:{'Authorization': props.authData.data.token}} )
       .then(response => {
         if (response.status === 200)
             props.productAction.setData(response.data.data)
       })
     //Load initial categories
-    Axios.get('http://127.0.0.1:3001/categories', {headers:{'Authorization': props.authData.data.token}} )
+    Axios.get(`${process.env.REACT_APP_API_HOST}/categories`, {headers:{'Authorization': props.authData.data.token}} )
       .then(response => {
         if (response.status === 200)
             props.categoryAction.setData(response.data.data)
