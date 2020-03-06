@@ -13,6 +13,9 @@ import FormControl from '@material-ui/core/FormControl';
 import OutlinedInput from '@material-ui/core/OutlinedInput';
 import InputLabel from '@material-ui/core/InputLabel';
 import Input from '@material-ui/core/Input';
+import {List, ListItem, ListItemIcon, ListItemText, ListItemSecondaryAction} from '@material-ui/core';
+import {Inbox as InboxIcon, Drafts as DraftsIcon} from '@material-ui/icons'
+import currencyFormatter from 'currency-formatter'
 
 import CartList from '../components/CartList';
 import LeftMenuContent from '../components/LeftMenuContent';
@@ -36,15 +39,70 @@ import {
 
 import moment from 'moment'
 
+const CHOICES = [
+  {
+    id:1,
+    title:'Today',
+    reportParams: { dateStart: moment().subtract(1, 'day').format('YYYY-MM-DD'), dateEnd: moment().format('YYYY-MM-DD'), period: 'hourly' },
+    summaryParams: { dateStart: moment().subtract(1, 'day').format('YYYY-MM-DD'), dateEnd: moment().format('YYYY-MM-DD') },
+  },
+  {
+    id: 2,
+    title: 'Yesterday',
+    reportParams: { dateStart: moment().subtract(2, 'day').format('YYYY-MM-DD'), dateEnd: moment().subtract(1, 'day').format('YYYY-MM-DD'), period: 'hourly' },
+    summaryParams: { dateStart: moment().subtract(2, 'day').format('YYYY-MM-DD'), dateEnd: moment().subtract(1, 'day').format('YYYY-MM-DD')},
+  },
+  {
+    id: 3,
+    title: 'This week',
+    reportParams: { dateStart: moment().subtract(1, 'week').format('YYYY-MM-DD'), dateEnd: moment().format('YYYY-MM-DD'), period: 'daily' },
+    summaryParams: { dateStart: moment().subtract(1, 'week').format('YYYY-MM-DD'), dateEnd: moment().format('YYYY-MM-DD')},
+  },
+  {
+    id: 4,
+    title: 'Last week',
+    reportParams: { dateStart: moment().subtract(2, 'week').format('YYYY-MM-DD'), dateEnd: moment().subtract(1, 'week').format('YYYY-MM-DD'), period: 'daily' },
+    summaryParams: { dateStart: moment().subtract(2, 'week').format('YYYY-MM-DD'), dateEnd: moment().subtract(1, 'week').format('YYYY-MM-DD')},
+  },
+  {
+    id: 5,
+    title: 'This month',
+    reportParams: { dateStart: moment().subtract(1, 'month').format('YYYY-MM-DD'), dateEnd: moment().format('YYYY-MM-DD'), period: 'daily' },
+    summaryParams: { dateStart: moment().subtract(1, 'month').format('YYYY-MM-DD'), dateEnd: moment().format('YYYY-MM-DD')},
+  },
+  {
+    id: 6,
+    title: 'Last month',
+    reportParams: { dateStart: moment().subtract(2, 'month').format('YYYY-MM-DD'), dateEnd: moment().subtract(1, 'month').format('YYYY-MM-DD'), period: 'daily' },
+    summaryParams: { dateStart: moment().subtract(2, 'month').format('YYYY-MM-DD'), dateEnd: moment().subtract(1, 'month').format('YYYY-MM-DD')},
+  },
+  {
+    id: 7,
+    title: 'This year',
+    reportParams: { dateStart: moment().subtract(1, 'year').format('YYYY-MM-DD'), dateEnd: moment().format('YYYY-MM-DD'), period: 'monthly' },
+    summaryParams: { dateStart: moment().subtract(1, 'year').format('YYYY-MM-DD'), dateEnd: moment().format('YYYY-MM-DD')},
+  },
+  {
+    id: 8,
+    title: 'Last year',
+    reportParams: { dateStart: moment().subtract(2, 'year').format('YYYY-MM-DD'), dateEnd: moment().subtract(1, 'year').format('YYYY-MM-DD'), period: 'monthly' },
+    summaryParams: { dateStart: moment().subtract(2, 'year').format('YYYY-MM-DD'), dateEnd: moment().subtract(1, 'year').format('YYYY-MM-DD')},
+  },
+]
 
 function Statistics(props) {
+  const [summaryParams, setSummaryParams] = React.useState({})
+  const [summaryData, setSummaryData] = React.useState({})
+  const [reportData, setReportData] = React.useState({})
+  const [reportParams, setReportParams] = React.useState({})
+
   if(!props.authData.data.id) props.history.push('/signin')
   //Init
   function reloadReport(params={dateStart:moment().subtract(1, 'month').format('YYYY-MM-DD'), dateEnd:moment().format('YYYY-MM-DD'), period:'daily'}){
     Axios.get('http://127.0.0.1:3001/products/reports', {headers:{'Authorization': props.authData.data.token}, params:params } )
           .then(response => {
             if (response.status === 200) {
-              props.reportAction.setData(response.data.data)
+              setReportData(response.data.data)
             }
           })
           .catch(error => {
@@ -62,52 +120,60 @@ function Statistics(props) {
           })
   }
 
+  function reloadSummary(params = { dateStart: moment().subtract(1, 'month').format('YYYY-MM-DD'), dateEnd: moment().format('YYYY-MM-DD')}) {
+    Axios.get('http://127.0.0.1:3001/orders', { headers: { 'Authorization': props.authData.data.token }, params: params })
+      .then(response => {
+        if (response.status === 200) {
+          setSummaryData(response.data.data)
+        }
+      })
+      .catch(error => {
+        if (!error.response) {
+          props.enqueueSnackbar('Connection error!', { variant: 'error' })
+        } else {
+          if (error.response.data.errors) {
+            error.response.data.errors.forEach(e => {
+              props.enqueueSnackbar(e.message, { variant: 'error' })
+            })
+          } else {
+            props.enqueueSnackbar('Unknown server error', { variant: 'error' })
+          }
+        }
+      })
+  }
+
   useEffect(() => {
     props.miscAction.setState({openLeftMenu: false, openRightMenu: false})
-    //Init first report
-    let params = {dateStart:moment().subtract(1, 'month').format('YYYY-MM-DD'), dateEnd:moment().format('YYYY-MM-DD'), period:'daily'}
-    console.log(params)
-    props.reportAction.setParams(params)
-    reloadReport(params)
+    reloadReport(CHOICES[4].reportParams)
+    reloadSummary(CHOICES[4].summaryParams)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   function onChangeReport(event){
-    let params
-    switch(event.target.value){
-      case 1: //today
-        params = {dateStart:moment().subtract(1, 'day').format('YYYY-MM-DD'), dateEnd:moment().format('YYYY-MM-DD'), period:'hourly'}
-        reloadReport(params)
-        break
-      case 2: //yesterday
-        params = {dateStart:moment().subtract(2, 'day').format('YYYY-MM-DD'), dateEnd:moment().subtract(1,'day').format('YYYY-MM-DD'), period:'hourly'}
-        reloadReport(params)
-        break
-      case 3: //this week
-        params = {dateStart:moment().subtract(1, 'week').format('YYYY-MM-DD'), dateEnd:moment().format('YYYY-MM-DD'), period:'daily'}
-        reloadReport(params)
-        break
-      case 4: //last week
-        params = {dateStart:moment().subtract(2, 'week').format('YYYY-MM-DD'), dateEnd:moment().subtract(1,'week').format('YYYY-MM-DD'), period:'daily'}
-        reloadReport(params)
-        break
-      case 6:
-        params = {dateStart:moment().subtract(2, 'month').format('YYYY-MM-DD'), dateEnd:moment().subtract(1,'month').format('YYYY-MM-DD'), period:'daily'}
-        reloadReport(params)
-        break
-      case 7:
-        params = {dateStart:moment().subtract(1, 'year').format('YYYY-MM-DD'), dateEnd:moment().format('YYYY-MM-DD'), period:'monthly'}
-        reloadReport(params)
-        break
-      case 8:
-        params = {dateStart:moment().subtract(2, 'year').format('YYYY-MM-DD'), dateEnd:moment().subtract(1, 'year').format('YYYY-MM-DD'), period:'monthly'}
-        reloadReport(params)
-        break
-      default: //this month
-        params = {dateStart:moment().subtract(1, 'month').format('YYYY-MM-DD'), dateEnd:moment().format('YYYY-MM-DD'), period:'daily'}
-        reloadReport(params)
+    const choice = event.target.value
+    let choiceData = CHOICES.find(item => item.id == choice)
+    if(!choiceData){
+      choiceData = CHOICES[4];
     }
+    reloadReport(choiceData.reportParams)
+    reloadSummary(choiceData.summaryParams)
   }
-  //Render
+  
+  const renderItem = (item) => {
+    return(
+      <ListItem button>
+        <ListItemIcon>
+          <InboxIcon />
+        </ListItemIcon>
+        <ListItemText primary={`Order #${item.invoice_id}`} secondary={moment(item.created_at).format('YYYY/MM/DD HH:mm:ss')} />
+        <ListItemSecondaryAction>
+          <div>{currencyFormatter.format(item.price, { code: 'IDR' })}</div>
+          <div style={{textAlign:'right'}}>{item.sum_items} items</div>
+        </ListItemSecondaryAction>
+      </ListItem>
+    )
+  }
+
   return (
     <React.Fragment>
       <Container leftMenu={<LeftMenuContent {...props} />} {...props}>
@@ -115,20 +181,15 @@ function Statistics(props) {
             <CardHeader action={
               <FormControl>
                   <Select onChange={onChangeReport} variant="outlined" margin='dense' defaultValue={5}>
-                      <MenuItem value={1}>Today</MenuItem>
-                      <MenuItem value={2}>Yesterday</MenuItem>
-                      <MenuItem value={3}>This week</MenuItem>
-                      <MenuItem value={4}>Last week</MenuItem>
-                      <MenuItem value={5}>This month</MenuItem>
-                      <MenuItem value={6}>Last month</MenuItem>
-                      <MenuItem value={7}>This year</MenuItem>
-                      <MenuItem value={8}>Last year</MenuItem>
+                    {
+                      CHOICES.map(choice => <MenuItem value={choice.id}>{choice.title}</MenuItem>)
+                    }
                   </Select>
               </FormControl>
-            } title="Summary" subheader={`From ${props.reportData.start} to ${props.reportData.end}`} />
+            } title="Summary" subheader={`From ${reportData.start} to ${reportData.end}`} />
             <CardContent style={{height:'300px', width:'100%'}}>
               <ResponsiveContainer width={"99.9%"} height={"99.98%"}>
-                <AreaChart data={props.reportData.data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                <AreaChart data={reportData.data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8}/>
@@ -151,6 +212,17 @@ function Statistics(props) {
               </ResponsiveContainer>
             </CardContent>
           </Card>
+       
+        <Card style={{ marginTop:'32px',flexWrap: 'wrap' }}>
+          <CardHeader title="Transactions" />
+          <CardContent>
+          <List component="nav" aria-label="main mailbox folders">
+            {
+              summaryData.items && summaryData.items.length ? summaryData.items.map(item => renderItem(item)) : <div style={{padding:'8px'}}><i>No transaction found.</i></div>
+            }
+          </List>
+          </CardContent>
+        </Card>
       </Container>
     </React.Fragment>
   )
