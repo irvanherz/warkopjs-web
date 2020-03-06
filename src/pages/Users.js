@@ -22,10 +22,12 @@ function Home(props) {
     props.miscAction.setState({openLeftMenu: false, openRightMenu: false})
     Axios.get(`${process.env.REACT_APP_API_HOST}/users`, {headers:{'Authorization': props.authData.data.token}} )
       .then(response => {
-        if (response.status === 200)
+        if (response.status === 200) {
             props.userAction.setData(response.data.data)
-   [props.authData.data.token, props.miscAction, props.userAction] })
-  }, [props.authData.data.token, props.miscAction, props.userAction])
+        }
+  })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   //Render
   return (

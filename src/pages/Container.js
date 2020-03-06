@@ -51,6 +51,7 @@ function Container(props) {
   //Init
   useEffect(() => {
     props.miscAction.setState({openLeftMenu: false, openRightMenu: false})
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   //Render

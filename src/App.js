@@ -9,7 +9,6 @@ import Signin from './pages/Signin'
 import Signup from './pages/Signup'
 import Statistics from './pages/Statistics'
 import axios from 'axios';
-import Test from './pages/Test'
 import { withSnackbar } from 'notistack';
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
