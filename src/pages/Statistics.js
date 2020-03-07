@@ -98,8 +98,8 @@ function Statistics(props) {
 
   if(!props.authData.data.id) props.history.push('/signin')
   //Init
-  function reloadReport(params={dateStart:moment().subtract(1, 'month').format('YYYY-MM-DD'), dateEnd:moment().format('YYYY-MM-DD'), period:'daily'}){
-    Axios.get(`${process.env.REACT_APP_API_HOST}/products/reports`, {headers:{'Authorization': props.authData.data.token}, params:params } )
+  function reloadReport(params=CHOICES[4].reportParams){
+    Axios.get('http://127.0.0.1:3001/products/reports', {headers:{'Authorization': props.authData.data.token}, params:params } )
           .then(response => {
             if (response.status === 200) {
               setReportData(response.data.data)
@@ -120,8 +120,8 @@ function Statistics(props) {
           })
   }
 
-  function reloadSummary(params = { dateStart: moment().subtract(1, 'month').format('YYYY-MM-DD'), dateEnd: moment().format('YYYY-MM-DD')}) {
-    Axios.get(`${process.env.REACT_APP_API_HOST}/orders`, { headers: { 'Authorization': props.authData.data.token }, params: params })
+  function reloadSummary(params = CHOICES[4].summaryParams) {
+    Axios.get('http://127.0.0.1:3001/orders', { headers: { 'Authorization': props.authData.data.token }, params: params })
       .then(response => {
         if (response.status === 200) {
           setSummaryData(response.data.data)

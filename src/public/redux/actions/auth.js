@@ -8,6 +8,13 @@ export const setLoginData = (data) => {
     }
 }
 
+export const updateLoginData = (data) => {
+    return {
+        type: 'AUTH_UPDATE_LOGIN_DATA',
+        data
+    }
+}
+
 export const unsetLoginData = () => {
     return {
         type: 'AUTH_UNSET_LOGIN_DATA',
